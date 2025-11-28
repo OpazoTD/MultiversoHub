@@ -2,9 +2,8 @@ import React, { createContext, useContext, useReducer, useEffect, ReactNode } fr
 import { saveFavorites, getFavorites } from '../services/storage';
 import { logFavoriteToggle } from '../services/telemetry';
 
-// Estado del contexto de favs
 interface FavoritesState {
-  favoriteIds: number[];          // Array de IDs de personajes favs
+  favoriteIds: number[];          
 }
 
 // Acciones disponibles para el reducer
@@ -35,23 +34,20 @@ const favoritesReducer = (
 ): FavoritesState => {
   switch (action.type) {
     case 'SET_FAVORITES':
-      // Reemplazar toda la lista de favoritos
       return { favoriteIds: action.payload };
       
     case 'ADD_FAVORITE':
-      // Agregar un ID si no existe
       if (state.favoriteIds.includes(action.payload)) {
-        return state; // Ya existe, no hacer nada
+        return state; 
       }
       return { favoriteIds: [...state.favoriteIds, action.payload] };
       
     case 'REMOVE_FAVORITE':
-      // Filtrar el ID a remover
       return {
         favoriteIds: state.favoriteIds.filter(id => id !== action.payload),
       };
 
-    case 'RESET_FAVORITES': // <--- NUEVO: Maneja el reseteo
+    case 'RESET_FAVORITES':
       return {
         favoriteIds: [],
       };
@@ -61,17 +57,13 @@ const favoritesReducer = (
   }
 };
 
-// Estado inicial
 const initialState: FavoritesState = {
   favoriteIds: [],
 };
 
-// Provider para favoritos
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // useReducer para manejar el estado de favoritos
   const [state, dispatch] = useReducer(favoritesReducer, initialState);
 
-  // Cargar favoritos guardados al iniciar
   useEffect(() => {
     loadFavorites();
   }, []);
@@ -115,7 +107,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
-  // <--- NUEVO: Función para limpiar el estado
   const resetFavoritesState = () => {
     dispatch({ type: 'RESET_FAVORITES' });
   };
@@ -126,7 +117,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     removeFavorite,
     isFavorite,
     toggleFavorite,
-    resetFavoritesState, // <--- NUEVO: Agregado al value
+    resetFavoritesState, 
     favoritesCount: state.favoriteIds.length,
   };
 
@@ -137,7 +128,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   );
 };
 
-// Hook personalizado para usar el contexto (Asegúrate de tener esto exportado)
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (context === undefined) {
