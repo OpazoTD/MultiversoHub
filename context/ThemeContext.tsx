@@ -7,19 +7,16 @@ import { logThemeChange } from '../services/telemetry';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
-  setThemeMode: (mode: Theme) => void; // <--- Agregado: Definición en la interfaz
+  setThemeMode: (mode: Theme) => void;
   isDark: boolean;
 }
 
-// Crear el contexto con valor undefined inicial
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Props para el provider
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
-// Envuelve la app y proporciona el tema
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }): React.JSX.Element => {
   const [theme, setTheme] = useState<Theme>('light');
 
@@ -34,18 +31,15 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }): React
     setTheme(savedTheme);
   };
 
-  // <--- Agregado: Función para establecer un modo específico (usado al resetear datos)
   const setThemeMode = async (mode: Theme) => {
     setTheme(mode);
     await saveTheme(mode);
     logThemeChange(mode);
   };
 
-  // Alterna entre tema claro y oscuro
   const toggleTheme = async () => {
     // Determina el nuevo tema
     const newTheme: Theme = theme === 'light' ? 'dark' : 'light';
-    // Reutilizamos la lógica de guardar y loguear
     await setThemeMode(newTheme);
   };
   
@@ -54,7 +48,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }): React
   const value: ThemeContextType = {
     theme,
     toggleTheme,
-    setThemeMode, // <--- Agregado: Exponer la función
+    setThemeMode,
     isDark,
   };
 
@@ -69,7 +63,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }): React
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   
-  // Verificar que se esté usando dentro del provider
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
