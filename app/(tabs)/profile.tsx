@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Alert,
   View,
   Text,
   ScrollView,
@@ -65,7 +66,6 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               <Text style={styles.modalButtonText}>Cancelar</Text>
             </TouchableOpacity>
 
-            {/* Botón Borrar (Estilo similar a "Muertos" - Rojo) */}
             <TouchableOpacity 
               style={[styles.modalButton, { backgroundColor: "#ef4444" }]}
               onPress={onConfirm}
@@ -85,30 +85,23 @@ export default function ProfileScreen() {
   const colors = Colors[theme];
   const { favoritesCount, resetFavoritesState } = useFavorites();
   
-  // Estado para controlar la visibilidad del modal
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
 
   React.useEffect(() => {
     logScreenView("Profile");
   }, []);
 
-  // 1. Función que abre el modal
   const handleClearDataPress = () => {
     setDeleteModalVisible(true);
   };
 
-  // 2. Función que ejecuta el borrado real (se pasa al modal)
   const performClearData = async () => {
     try {
       await clearAllData();
       resetFavoritesState();
       if (setThemeMode) setThemeMode("light");
-      
-      // Cerramos el modal
       setDeleteModalVisible(false);
-      
-      // Opcional: Mostrar un pequeño feedback visual o cerrar modal
-      // (Aquí podrías usar un Toast en lugar de Alert si quisieras evitar UI nativa al 100%)
+    
       
     } catch (error) {
       console.error("❌ Error borrando datos:", error);
@@ -117,10 +110,13 @@ export default function ProfileScreen() {
   };
 
   const handleAbout = () => {
-    // Si quieres también puedes hacer un modal custom para esto, 
-    // pero por ahora mantenemos el Alert sencillo
-    /* Alert.alert(...) */
+    Alert.alert(
+      'Acerca de MultiversoHub',
+      'Versión 1.0.0\n\nApp desarrollada con React Native y Expo.\nDatos proporcionados por The Rick and Morty API.',
+      [{ text: 'OK' }]
+    );
   };
+
 
   return (
     <>
@@ -174,7 +170,7 @@ export default function ProfileScreen() {
 
           <Pressable
             style={[styles.button, { backgroundColor: colors.card }]}
-            onPress={handleClearDataPress} // Cambiado para abrir modal
+            onPress={handleClearDataPress} 
           >
             <Text style={[styles.buttonText, { color: colors.error }]}>
               Borrar todos los datos
@@ -203,8 +199,6 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
       </ScrollView>
-
-      {/* Renderizamos el Modal aquí, fuera del ScrollView pero dentro del fragmento */}
       <DeleteConfirmationModal 
         visible={isDeleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
